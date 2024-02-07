@@ -1,9 +1,14 @@
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Zoom, toast } from "react-toastify";
+
+import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
+import "react-toastify/dist/ReactToastify.css";
 
 const SigninFormSchema = z.object({
   email: z.string().email(),
@@ -15,6 +20,9 @@ const SigninFormSchema = z.object({
 
 export default function Signin() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { error: errorMessage } = useSelector((state) => state.user);
 
   const {
     register,
@@ -25,10 +33,8 @@ export default function Signin() {
     resolver: zodResolver(SigninFormSchema),
   });
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   const onSubmit = async (formData) => {
-    setErrorMessage(null);
+    dispatch(signInStart());
     try {
       const res = await fetch("/api/auth/signin", {
         method: "POST",
@@ -39,13 +45,20 @@ export default function Signin() {
       });
       const data = await res.json();
       if (data.success === false) {
-        return setErrorMessage(data.message);
+        dispatch(signInFailure(data.message));
       }
       if (res.ok) {
+        dispatch(signInSuccess(data));
+        toast.success("Login successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
         navigate("/");
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      dispatch(signInFailure(error.message));
     }
   };
 

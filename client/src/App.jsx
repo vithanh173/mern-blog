@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer, Zoom } from "react-toastify";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -13,6 +14,7 @@ import Footer from "./components/Footer";
 export default function Main() {
   return (
     <BrowserRouter>
+      <ToastContainer position="top-center" autoClose={3000} draggable transition={Zoom} />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />

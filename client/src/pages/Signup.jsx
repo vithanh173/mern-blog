@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Zoom, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const required_error = "This field cannot be blank";
 const SignupFormSchema = z.object({
@@ -47,6 +50,12 @@ export default function Signup() {
         return setErrorMessage(data.message);
       }
       if (res.ok) {
+        toast.success(data, {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
         navigate("/sign-in");
       }
     } catch (error) {
