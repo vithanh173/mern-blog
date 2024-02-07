@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Zoom, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import OAuth from "../components/OAuth";
 
 const required_error = "This field cannot be blank";
 const SignupFormSchema = z.object({
@@ -106,6 +107,7 @@ export default function Signup() {
             <Button type="submit" disabled={isSubmitting} gradientDuoTone="purpleToPink">
               Sign Up
             </Button>
+            <OAuth />
           </form>
           <div className="flex gap-2 text-lg mt-5">
             <span>Have an account?</span>

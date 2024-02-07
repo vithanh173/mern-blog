@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { Zoom, toast } from "react-toastify";
 
 import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 import "react-toastify/dist/ReactToastify.css";
 
 const SigninFormSchema = z.object({
@@ -95,6 +96,7 @@ export default function Signin() {
             <Button type="submit" disabled={isSubmitting} gradientDuoTone="purpleToPink">
               Sign In
             </Button>
+            <OAuth />
           </form>
           <div className="flex gap-2 text-lg mt-5">
             <span>Don't have an account?</span>
