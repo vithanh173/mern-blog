@@ -12,7 +12,6 @@ export default function Header() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.user);
-  console.log(user.currentUser.image);
 
   return (
     <Navbar className="border-b-2">

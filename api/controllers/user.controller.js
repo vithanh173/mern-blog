@@ -21,7 +21,7 @@ export const updateUser = async (req, res, next) => {
       return next(errorHandler(400, "Username cannot contain special characters"));
     }
   }
-  if (!req.body.username || !req.body.email || !req.body.password) {
+  if (req.body.username === "" || req.body.email === "") {
     return next(errorHandler(400, "Fields cannot be updated when it is empty"));
   }
   try {
