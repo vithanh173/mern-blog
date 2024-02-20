@@ -17,6 +17,7 @@ import {
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 const DashboardProfile = () => {
   const { user } = useSelector((state) => state.user);
@@ -241,9 +242,21 @@ const DashboardProfile = () => {
           onChange={handleChange}
         />
         <TextInput type="password" id="password" placeholder="Password" onChange={handleChange} />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={user.loading || imageUploading}
+        >
+          {user.loading ? "Loading..." : "Update"}
         </Button>
+        {user.currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <Button type="button" gradientDuoTone="purpleToPink" className="w-full">
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span className="cursor-pointer" onClick={() => setShowModal(true)}>
