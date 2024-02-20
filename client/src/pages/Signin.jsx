@@ -47,6 +47,12 @@ export default function Signin() {
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data.message));
+        toast.error(data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
       }
       if (res.ok) {
         dispatch(signInSuccess(data));
@@ -60,6 +66,12 @@ export default function Signin() {
       }
     } catch (error) {
       dispatch(signInFailure(error.message));
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 3000,
+        draggable: true,
+        transition: Zoom,
+      });
     }
   };
 
