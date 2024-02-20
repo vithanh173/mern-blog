@@ -48,7 +48,11 @@ export const signin = async (req, res, next) => {
     if (!validPassword) {
       return next(errorHandler(400, "Wrong credentials!"));
     }
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign(
+      { id: validUser._id, isAdmin: validUser.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     const { password: pass, ...data } = validUser._doc;
 
@@ -63,7 +67,11 @@ export const google = async (req, res, next) => {
       email,
     });
     if (existingUser) {
-      const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign(
+        { id: existingUser._id, isAdmin: existingUser.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
       const { password, ...data } = existingUser._doc;
       res.status(200).cookie("access_token", token, { httpOnly: true }).json(data);
     } else {
@@ -77,7 +85,11 @@ export const google = async (req, res, next) => {
         image: photoUrl,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
       const { password, ...data } = newUser._doc;
       res.status(200).cookie("access_token", token, { httpOnly: true }).json(data);
     }

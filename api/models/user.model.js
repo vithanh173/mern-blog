@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema(
       default:
         "https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png",
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
