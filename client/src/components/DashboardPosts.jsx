@@ -1,5 +1,6 @@
-import { Button, Pagination, Table } from "flowbite-react";
+import { Button, Modal, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Zoom, toast } from "react-toastify";
@@ -8,6 +9,8 @@ const DashboardPosts = () => {
   const { user } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [postId, setPostId] = useState("");
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -34,7 +37,7 @@ const DashboardPosts = () => {
     }
   }, [user.currentUser._id]);
 
-  const handleShowMore = async (page) => {
+  const handleShowMore = async () => {
     const startIndex = userPosts.length;
     try {
       const res = await fetch(
@@ -43,6 +46,39 @@ const DashboardPosts = () => {
       const data = await res.json();
       if (res.ok) {
         setUserPosts((prev) => [...prev, ...data.posts]);
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 3000,
+        draggable: true,
+        transition: Zoom,
+      });
+    }
+  };
+
+  const handleDeletePost = async () => {
+    setShowModal(false);
+    try {
+      const res = await fetch(`/api/post/deletepost/${postId}/${user.currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
+      } else {
+        setUserPosts((prev) => prev.filter((post) => post._id !== postId));
+        toast.success("Delete successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
       }
     } catch (error) {
       toast.error(error.message, {
@@ -87,7 +123,13 @@ const DashboardPosts = () => {
                   </Table.Cell>
                   <Table.Cell>{post.category}</Table.Cell>
                   <Table.Cell>
-                    <span className="text-red-500 font-semibold hover:underline cursor-pointer">
+                    <span
+                      className="text-red-500 font-semibold hover:underline cursor-pointer"
+                      onClick={() => {
+                        setShowModal(true);
+                        setPostId(post._id);
+                      }}
+                    >
                       Delete
                     </span>
                   </Table.Cell>
@@ -117,6 +159,25 @@ const DashboardPosts = () => {
       ) : (
         <p>You have no posts yet!</p>
       )}
+      <Modal show={showModal} popup size="md" onClose={() => setShowModal(false)}>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure want to delete this post?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeletePost}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
