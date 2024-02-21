@@ -58,7 +58,38 @@ const DashboardUsers = () => {
     }
   };
 
-  const handleDeleteUser = async () => {};
+  const handleDeleteUser = async () => {
+    try {
+      const res = await fetch(`/api/user/delete/${userId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
+      } else {
+        setUsers((prev) => prev.filter((user) => user._id !== userId));
+        setShowModal(false);
+        toast.success("Delete successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          draggable: true,
+          transition: Zoom,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 3000,
+        draggable: true,
+        transition: Zoom,
+      });
+    }
+  };
 
   return (
     <div className="w-full table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-sky-700 dark:scrollbar-thumb-slate-500">
