@@ -1,13 +1,14 @@
-import { Table } from "flowbite-react";
+import { Button, Pagination, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Zoom, toast } from "react-toastify";
 
 const DashboardPosts = () => {
   const { user } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
+  const [showMore, setShowMore] = useState(true);
 
-  console.log(userPosts);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -15,6 +16,9 @@ const DashboardPosts = () => {
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
+          if (data.posts.length < 9) {
+            setShowMore(false);
+          }
         }
       } catch (error) {
         toast.error(error.message, {
@@ -30,8 +34,28 @@ const DashboardPosts = () => {
     }
   }, [user.currentUser._id]);
 
+  const handleShowMore = async (page) => {
+    const startIndex = userPosts.length;
+    try {
+      const res = await fetch(
+        `/api/post/getposts?userId=${user.currentUser._id}&startIndex=${startIndex}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setUserPosts((prev) => [...prev, ...data.posts]);
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 3000,
+        draggable: true,
+        transition: Zoom,
+      });
+    }
+  };
+
   return (
-    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-sky-700 dark:scrollbar-thumb-slate-500">
+    <div className="w-full table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-sky-700 dark:scrollbar-thumb-slate-500">
       {user.currentUser.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
@@ -46,7 +70,7 @@ const DashboardPosts = () => {
               </Table.HeadCell>
             </Table.Head>
             {userPosts.map((post) => (
-              <Table.Body className="divide-y">
+              <Table.Body key={post._id} className="divide-y">
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                   <Table.Cell>{new Date(post.updatedAt).toLocaleDateString()}</Table.Cell>
                   <Table.Cell>
@@ -79,6 +103,16 @@ const DashboardPosts = () => {
               </Table.Body>
             ))}
           </Table>
+          {showMore && (
+            <Button
+              gradientMonochrome="teal"
+              outline
+              className="my-7 mx-auto"
+              onClick={handleShowMore}
+            >
+              Show more
+            </Button>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>
